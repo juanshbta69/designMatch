@@ -1,0 +1,134 @@
+/*
+* Fonts
+*/
+
+@font-face {
+  font-family: 'KGNeatlyPrinted';
+  src: url('../fonts/KGNeatlyPrinted.ttf');
+}
+
+@font-face {
+  font-family: 'OpenSansRegular';
+  src: url('../fonts/OpenSans-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Chardons';
+  src: url('../fonts/Chardons.ttf');
+}
+
+body {
+    font-family: OpenSansRegular;
+}
+
+/*
+* Classes
+*/
+
+.buscoayuda-inline-block {
+    display: inline-block;
+}
+
+.buscoayuda-index-independiente-cont {
+    padding: 0;
+    margin: 2rem;
+    background-size: contain;
+    border-radius: 1rem;
+    box-shadow: 0.5rem 0.5rem 1rem #ccc;
+}
+
+.buscoayuda-index-independiente-cont img {
+    width: 100%;
+}
+
+.buscoayuda-index-independiente-cont h1 {
+    background-color: #669999;
+    margin: 0;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    font-family: KGNeatlyPrinted;
+    font-size: 40px;
+}
+
+.buscoayuda-index-independiente-cont p {
+    margin: 0;
+    padding: 1rem;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    border: 0.1rem solid #ccc;
+    border-top: none
+}
+
+
+/*
+* IDs
+*/
+
+#buscoayuda-header {
+    margin-top: 2rem;
+    margin-bottom: 5rem;
+    padding: 2rem;
+    border-bottom: 0.1rem solid #ccc;
+}
+
+#buscoayuda-header h1 {
+    margin: 0;
+    padding: 0;
+    color: #feaa26;
+    font-family: Chardons;
+    font-size: 80px;
+}
+
+#buscoayuda-header a {
+    color: #333;
+    padding: 2rem;
+    cursor: pointer;
+    font-family: KGNeatlyPrinted;
+    font-size: 23px;
+}
+
+#buscoayuda-header a:hover {
+    color: #feaa26;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#buscoayuda-header i {
+    margin-right: 1rem !important;
+}
+
+#buscoayuda-header nav {
+    float: right;
+}
+
+#buscoayuda-footer {
+    background-color: #333;
+    text-align: center;
+    padding: 3rem;
+    margin-top: 6rem;
+}
+
+#buscoayuda-footer p {
+    color: #aaa;
+    margin: 0;
+    font-size: 13px;
+}
+
+#buscoayuda-index-filter {
+    margin-bottom: 3rem;
+}
+
+#buscoayuda-index-filter h2 {
+    margin-right: 2rem;
+    margin-left: 2rem;
+    font-family: KGNeatlyPrinted;
+    font-weight: bold;
+}
+
+#buscoayuda-index-filter select {
+    border-radius: 1rem;
+    padding: 0.5rem;
+}

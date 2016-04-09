@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script>
+        var pathname = window.location.pathname; // Returns path only
+        var url = window.location.href;     // Returns full URL
+        (function () {
+            $.getJSON(pathname).done(function (data) {
+                $.each(data, function (i, item) {
+                    $("#proyectos").prepend('<tr>' +
+                            '<td>' + item.fields._id + '</td>' +
+                            '<td>' + item.fields.nombre + '</td>' +
+                            '<td>' + item.fields.descripcion + '</td>' +
+                            '<td>' + item.fields.valor_estimado + '</td>' +
+                            '<td>' + item.fields.fecha_creacion + '</td>' +
+                            '<td>' +
+                            '<a onclick="verDiseniosProyecto(\'' + item.fields._id + '\',\'' + item.fields.nombre + '\', \'' + item.fields.descripcion + '\', \'' + item.fields.valor_estimado + '\')" href="#" class="btn btn-primary" title="Detalles"><span class="glyphicon glyphicon-folder-close"/></a>' +
+                            '</td>' +
+                            '</tr>'
+                    )
+                    ;
+                });
+            });
+        })();
+
+        function verDiseniosProyecto(_id, nombre, descripcion, valor) {
+            var proyecto = {
+                '_id': _id,
+                'nombre': nombre,
+                'descripcion': descripcion,
+                'valor': valor,
+                'codigoEmpresa': getCodigoEmpresa(pathname),
+                'nombreEmpresa': getNombreEmpresa(pathname)
+            };
+            localStorage.setItem('proyecto', JSON.stringify(proyecto));
+            window.location = "/designMatch/diseniosProyecto/" + _id + "/";
+        }
+
+        function getCodigoEmpresa(url) {
+            var arr = url.split('/');
+            var num = arr.length;
+            return arr[num - 2];
+        }
+
+        function getNombreEmpresa(url) {
+            var arr = url.split('/');
+            var num = arr.length;
+            return arr[num - 3];
+        }
+
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Design Match</a>
+        </div>
+    </div>
+</nav>
+<br>
+<br>
+
+<h1 align="center">Design Match</h1><br>
+<h2 id="tituloProyectos">Sus proyectos</h2><br>
+<div>
+    <table id="tablaProyectos" class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Valor estimado</th>
+            <th>Fecha creación</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="proyectos">
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

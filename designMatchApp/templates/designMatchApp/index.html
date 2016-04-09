@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script>
+        (function () {
+            $.getJSON("/designMatch/usuario").done(function (data) {
+                $.each(data, function (i, item) {
+                    if (item.fields.url_empresa) {
+                        $('#mensaje').text("Su URL pública de consulta de proyectos y registro de diseños es: /designMatch/verDiseniosEmpresa/" + item.fields.url_empresa);
+                    }
+                });
+            });
+        })();
+
+        (function () {
+            $.getJSON("/designMatch").done(function (data) {
+                $.each(data, function (i, item) {
+                    $("#proyectos").prepend('<tr>' +
+                            '<td>' + item.fields._id + '</td>' +
+                            '<td>' + item.fields.nombre + '</td>' +
+                            '<td>' + item.fields.descripcion + '</td>' +
+                            '<td>' + item.fields.valor_estimado + '</td>' +
+                            '<td>' + item.fields.fecha_creacion + '</td>' +
+                            '<td>' +
+                            '<a onclick="editarProyecto(\'' + item.fields._id + '\', \'' + item.fields.nombre + '\', \'' + item.fields.descripcion + '\', \'' + item.fields.valor_estimado + '\')" href="#" class="btn btn-primary" title="Editar"><span class="glyphicon glyphicon-pencil"/></a>  ' +
+                            '<a onclick="eliminarProyecto(\'' + item.fields._id + '\')" href="#" class="btn btn-primary" title="Eliminar"><span class="glyphicon glyphicon-trash"/></a>  ' +
+                            '<a onclick="verDetallesProyecto(\'' + item.fields._id + '\',\'' + item.fields.nombre + '\', \'' + item.fields.descripcion + '\', \'' + item.fields.valor_estimado + '\')" href="#" class="btn btn-primary" title="Detalles"><span class="glyphicon glyphicon-folder-close"/></a>' +
+                            '</td>' +
+                            '</tr>'
+                    )
+                    ;
+                });
+            });
+        })();
+
+        (function () {
+            $.getJSON("/designMatch/isLogged").done(function (data) {
+                if (data.mensaje == "no") {
+                    $("#agregar_administrador").show();
+                    $("#cerrar_sesion").hide();
+                    $("#agregar_proyecto").hide();
+                    $("#login_administrador").show();
+                    $("#tablaProyectos").hide();
+                    $("#tituloProyectos").hide();
+                    $("#mensajes").hide();
+                } else {
+                    $("#agregar_administrador").hide();
+                    $("#cerrar_sesion").show();
+                    $("#agregar_proyecto").show();
+                    $("#login_administrador").hide();
+                    $("#tablaProyectos").show();
+                    $("#tituloProyectos").show();
+                    $("#mensajes").show();
+                }
+            });
+        })();
+
+        function logout() {
+            $.getJSON("/designMatch/logout").done(function (data) {
+                if (data.mensaje == 'ok') {
+                    location.reload();
+                } else {
+                    alert("Hubo un error");
+                }
+            });
+        }
+
+        function editarProyecto(_id, nombre, descripcion, valor) {
+            var proyecto = {
+                '_id': _id,
+                'nombre': nombre,
+                'descripcion': descripcion,
+                'valor': valor
+            };
+            localStorage.setItem('proyecto', JSON.stringify(proyecto));
+            window.location = "/designMatch/actualizarProyecto";
+        }
+
+        function verDetallesProyecto(_id, nombre, descripcion, valor) {
+            var proyecto = {
+                '_id': _id,
+                'nombre': nombre,
+                'descripcion': descripcion,
+                'valor': valor
+            };
+            localStorage.setItem('proyecto', JSON.stringify(proyecto));
+            window.location = "/designMatch/detallesProyecto/" + _id + "/";
+        }
+
+        function eliminarProyecto(_id) {
+            $.ajax({
+                url: "/designMatch/borrar/" + _id + "/",
+                type: "POST",
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function () {
+                    window.location = "/designMatch/verProyectos";
+                },
+            });
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Design Match</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li id="agregar_proyecto"><a href="/designMatch/agregarProyecto">Crear
+                    proyecto</a></li>
+                <li id="agregar_administrador"><a
+                        href="/designMatch/agregarAdministrador">Registro</a>
+                </li>
+                <li id="cerrar_sesion"><a class="glyphicon glyphicon-log-out" href="#" id="click_cerrar_sesion"
+                                          onclick="logout();"> Logout</a></li>
+                <li id="login_administrador"><a class="glyphicon glyphicon-log-in"
+                                                href="/designMatch/ingresar">
+                    Login</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<br>
+<br>
+
+<h1 align="center">Design Match</h1><br>
+<div id="mensajes" class="alert alert-info">
+    <label id="mensaje"></label>
+</div>
+<h2 id="tituloProyectos">Sus proyectos</h2><br>
+<div>
+    <table id="tablaProyectos" class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Valor estimado</th>
+            <th>Fecha creación</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="proyectos">
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

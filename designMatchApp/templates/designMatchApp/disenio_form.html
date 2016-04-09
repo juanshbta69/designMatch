@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+</head>
+<body>
+<div class="col-md-4 col-sm-4 col-md-offset-4 col-sm-offset-4">
+    <div class="page-header">
+        <h2>Diseño</h2>
+    </div>
+    <div class="alert alert-danger">
+        <label id="mensaje"></label>
+    </div>
+    <form id="formDisenio" action="" enctype="multipart/form-data" method="post">
+        <input id="nombres" name="nombres" type="text" placeholder="Nombres" class="form-control input-md" required><br>
+        <input id="apellidos" name="apellidos" type="text" placeholder="Apellidos" class="form-control input-md"
+               required><br>
+        <input id="email" name="email" type="email" placeholder="Email" class="form-control input-md" required><br>
+        <input id="disenio" name="disenio" type="file" required><br>
+        <input id="precioSolicitado" name="precioSolicitado" type="number" placeholder="Precio solicitado"
+               class="form-control input-md"
+               required><br>
+        <input type="submit" value="Añadir" class="btn btn-primary"/>
+        <a id="btnCancelar" href="#" class="btn btn-primary">Cancelar</a>
+    </form>
+</div>
+<script>
+    var proyecto = JSON.parse(localStorage.getItem("proyecto"));
+
+    var returnPath = "/designMatch/diseniosProyecto/" + proyecto.codigoEmpresa + "/";
+    $('#btnCancelar').attr("href", returnPath);
+
+    var altoDisenio;
+    var anchoDisenio;
+    var _URL = window.URL || window.webkitURL;
+
+    $("#disenio").change(function (e) {
+        var file, img;
+        if ((file = this.files[0])) {
+            img = new Image();
+            img.onload = function () {
+                altoDisenio = this.height;
+                anchoDisenio = this.width;
+            };
+            img.src = _URL.createObjectURL(file);
+        }
+    });
+
+    $('form').submit(function (e) {
+        var archivo = $('#disenio').val();
+        var extensiones = ['jpg', 'jpeg'];
+        if (archivo) {
+            var extension = archivo.split('.');
+            extension = extension.reverse();
+            if (altoDisenio > 800 && anchoDisenio > 600) {
+                if ($.inArray(extension[0].toLocaleLowerCase(), extensiones) >= 0) {
+                    var url = '/designMatch/crearDisenio/' + proyecto._id + '/';
+                    var formData = new FormData($("#formDisenio")[0]);
+                    $.ajax({
+                        url: url,
+                        type: $(this).attr('method'),
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            if (data.mensaje == "ok")
+                                window.location = "/designMatch/verDiseniosEmpresa/" + proyecto.nombreEmpresa + "/" + proyecto.codigoEmpresa + "/";
+                            else
+                                $('#mensaje').text(data.mensaje);
+                        },
+                        failure: function (errMsg) {
+                            $('#mensaje').text("Hubo un error");
+                        }
+                    });
+                } else {
+                    $('#mensaje').text("Las extensiones validas para el archivos son (jpg, jpeg).");
+                }
+            } else {
+                $('#mensaje').text("Las dimensiones minimas para el archivo son 800x600 pixeles.");
+            }
+        }
+        e.preventDefault();
+    });
+
+</script>
+</body>
+</html>

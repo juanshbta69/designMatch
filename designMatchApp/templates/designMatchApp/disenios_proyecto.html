@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+    <!-- <script src="https://designmatchdbucketprueba.s3.amazonaws.com/static/js/jquery.bootpag.min.js"></script> -->
+    <script src="https://designmatchdbucket.s3.amazonaws.com/static/js/jquery.bootpag.min.js"></script>
+    <script>
+
+        var imagenesPorPagina = 10;
+        var proyecto = JSON.parse(localStorage.getItem("proyecto"));
+        var pathname = window.location.pathname;
+
+        var paginas = 2;
+
+        (function () {
+            cargarDisenios(0, imagenesPorPagina);
+        })();
+
+        var paginasConsultadas = -1;
+        (function consultarNumeroPaginas() {
+            $.getJSON("/designMatch/consultaNumDisenios/" + proyecto._id + "/").done(function (data) {
+                $.each(data, function (i, item) {
+                    if (i == 'numDisenios') {
+                        paginasConsultadas = Math.ceil(item / imagenesPorPagina);
+                        $('#page-selection').bootpag({
+                            total: paginasConsultadas,
+                            maxVisible: 10
+                        });
+                    } else {
+                        alert("Error cargando paginación");
+                    }
+                });
+            });
+        })();
+
+        function cargarDisenios(paginaIni, paginaFin) {
+            $.getJSON("/designMatch/consultaDisenios/" + proyecto._id + "/" + paginaIni + "/" + paginaFin + "/").done(function (data) {
+                var code = "";
+                //code = code + '<div class="row">';
+                //code = code + '<div class="col-md-4 col-sm-6 col-lg-3 well">';
+                //code = code + '<div class="col-lg-6">';
+
+                $.each(data, function (i, item) {
+                    var urlImagen = 'diseniosOriginales/Not_available_icon.jpg';
+                    if (item.fields.estado == 'Disponible') {
+                        //urlImagen = getFileName(item.fields.disenio_procesado);
+                        urlImagen = item.fields.disenio_procesado;
+                    }
+                    code = code +
+                            '<div class="media">' +
+                                '<div class="media-left media-middle">' +
+                                    '<a>' +
+                                        //'<img src="https://designmatchdbucketprueba.s3.amazonaws.com/' + urlImagen + '" class="media-object" style="width: 500px;height: 300px">' +
+                                        //'<img src="https://designmatchdbucket.s3.amazonaws.com/' + urlImagen + '" class="media-object" style="width: 500px;height: 300px">' +
+                                    '<img src="https://d3by2s32vveey.cloudfront.net/' + urlImagen + '" class="media-object" style="width: 500px;height: 300px">' +
+                                    '</a>' +
+                                '</div>' +
+                                '<div class="media-body">' +
+                                    '<h4>Fecha de creación:' + item.fields.fecha_creacion + '</h4>' +
+                                    '<h4>Estado:' + item.fields.estado + '</h4>' +
+                                '</div>' +
+                            '</div>';
+                });
+                //code = code + '</div>'
+                //        + '</div>';
+                $("#content").html(code);
+            });
+        }
+        ;
+
+        function getFileName(url) {
+            var arr = url.split('/');
+            return arr[1];
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+</nav>
+<br>
+<br>
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="page-header">
+            <h2>Proyecto</h2>
+        </div>
+        <div>
+            <label for="nombre">Nombre:</label>
+            <input id="nombre" name="nombre" type="text" placeholder="Nombre" class="form-control input-md"
+                   disabled><br>
+            <label for="descripcion">Descripcion:</label>
+            <input id="descripcion" name="descripcion" type="text" placeholder="Descripción"
+                   class="form-control input-md"
+                   disabled><br>
+            <label for="valor_estimado">Valor estimado:</label>
+            <input id="valor_estimado" name="valor_estimado" type="number" placeholder="Valor estimado"
+                   class="form-control input-md" disabled><br>
+            <a id="btnVolver" href="#" class="btn btn-primary">Volver</a>
+            <button id="btnSubirDisenio" class="btn btn-primary" onclick="agregarDisenio()">Subir diseño</button>
+        </div>
+        <br>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="page-header">
+            <h2>Diseños:</h2>
+        </div>
+    </div>
+</div>
+<div id="content" align="center"></div>
+<div align="center" id="page-selection"></div>
+
+<script>
+    $("#nombre").val(proyecto.nombre);
+    $("#descripcion").val(proyecto.descripcion);
+    $("#valor_estimado").val(proyecto.valor);
+
+    $('#page-selection').bootpag({
+        total: paginas
+    }).on("page", function (event, num) {
+
+        var paginaIni = ((num - 1) * imagenesPorPagina);
+        var paginaFin = (num * imagenesPorPagina);
+        cargarDisenios(paginaIni, paginaFin);
+        // Despues de cargar disenios se actualiza el numero de paginas
+    });
+
+    var returnPath = '/designMatch/verDiseniosEmpresa/' + proyecto.nombreEmpresa + '/' + proyecto.codigoEmpresa + '/';
+    $('#btnVolver').attr("href", returnPath);
+
+    function agregarDisenio() {
+        window.location = "/designMatch/agregarDisenio";
+    }
+
+</script>
+</body>
+</html>

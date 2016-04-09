@@ -1,0 +1,65 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script>
+        function enviarDatos() {
+            if ($('#password').val() != $('#password2').val()) {
+                alert('Las contraseñas no coinciden');
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/designMatch/registrarAdministrador/",
+                data: JSON.stringify({
+                    username: $('#username').val(),
+                    enterprise_name: $('#enterprise_name').val(),
+                    password: $('#password').val(),
+                    email: $('#email').val()
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    window.location = "/designMatch/verProyectos";
+                },
+                failure: function (errMsg) {
+                    alert("Hubo un error");
+                }
+            });
+
+            return false;
+        }
+    </script>
+</head>
+<body>
+<div class="row">
+    <div class="col-md-6 col-sm-offset-3">
+        <div class="page-header">
+            <h2>Sign up</h2>
+        </div>
+
+        <form method="post" action="" onsubmit="return enviarDatos();">
+
+            <input id="username" name="username" type="text" placeholder="Nombre de usuario"
+                   class="form-control input-md"
+                   required><br>
+            <input id="enterprise_name" name="enterprise_name" type="text" placeholder="Nombre empresa"
+                   class="form-control input-md" required><br>
+            <input id="email" name="email" type="email" placeholder="Correo electronico" class="form-control input-md"
+                   required><br>
+            <input id="password" name="password" type="password" placeholder="Contraseña" class="form-control input-md"
+                   required><br>
+            <input id="password2" name="password2" type="password" placeholder="Verifique contraseña"
+                   class="form-control input-md" required><br>
+            <input type="submit" value="Registrar" class="btn btn-primary"/>
+            <a href="/designMatch/verProyectos" class="btn btn-primary">Cancelar</a>
+
+        </form>
+    </div>
+</div>
+</body>
+</html>
