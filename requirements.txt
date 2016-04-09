@@ -38,7 +38,6 @@ psutil==1.2.1
 psycopg2==2.6.1
 pyasn1==0.1.9
 pycrypto==2.6.1
-pycups==1.9.66
 pycurl==7.19.3
 pygpgme==0.3
 pylibmc==1.5.1
